@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Уход за Цветками</title>
+   <style>
+       body {
+           font-family: 'Arial', sans-serif;
+           background-color: #f4f7f6;
+           color: #333;
+           margin: 0;
+           padding: 20px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+       }
+       .container {
+           background-color: #ffffff;
+           padding: 25px;
+           border-radius: 12px;
+           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+           width: 100%;
+           max-width: 600px;
+       }
+       h1 {
+           color: #4CAF50;
+           text-align: center;
+           margin-bottom: 20px;
+       }
+       .plant-card {
+           border: 1px solid #ddd;
+           padding: 15px;
+           margin-bottom: 15px;
+           border-radius: 8px;
+           background-color: #fafafa;
+       }
+       .plant-card h2 {
+           margin-top: 0;
+           color: #388E3C;
+       }
+       .last-water-date {
+           font-weight: bold;
+           color: #00796B;
+           margin-top: 10px;
+       }
+       .water-btn {
+           background-color: #4CAF50;
+           color: white;
+           border: none;
+           padding: 10px 15px;
+           border-radius: 5px;
+           cursor: pointer;
+           width: 100%;
+           margin-top: 10px;
+           font-size: 16px;
+           transition: background-color 0.3s;
+       }
+       .water-btn:hover {
+           background-color: #45a049;
+       }
+       .reminder-section {
+           margin-top: 30px;
+           padding-top: 20px;
+           border-top: 1px dashed #ccc;
+       }
+       .reminder-item {
+           background-color: #fff3e0;
+           padding: 10px;
+           border-radius: 5px;
+           margin-bottom: 8px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+       }
+   </style>
+</head>
+<body>
+
+   <div class="container">
+       <h1>💧 Уход за Цветками 🌸</h1>
+
+       <!-- Секция для ввода данных -->
+       <div id="input-section">
+           <h2>Добавить/Обновить Цветы</h2>
+           <input type="text" id="plantName" placeholder="Название цветка (например, Роза)">
+           <button onclick="addPlant()">Добавить Цвет</button>
+       </div>
+
+       <!-- Секция для отображения цветков -->
+       <div id="plants-section">
+           <h2>Ваши Цветы</h2>
+           <!-- Здесь будут отображаться карточки цветков -->
+       </div>
+
+       <!-- Секция для напоминаний -->
+       <div class="reminder-section">
+           <h2>Напоминания</h2>
+           <div id="reminders-list">
+               <!-- Напоминания будут добавлены сюда -->
+               <p id="no-reminders">Напоминаний пока нет.</p>
+           </div>
+       </div>
+   </div>
+
+   <script>
+       const STORAGE_KEY = 'plantWateringData';
+       let plants = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+       let reminders = JSON.parse(localStorage.getItem('plantReminders')) || [];
+
+       const plantsSection = document.getElementById('plants-section');
+       const inputSection = document.getElementById('input-section');
+       const remindersList = document.getElementById('reminders-list');
+       const plantNameInput = document.getElementById('plantName');
+
+       // --- Функции управления данными ---
+
+       function savePlants() {
+           localStorage.setItem(STORAGE_KEY, JSON.stringify(plants));
+       }
+
+       function saveReminders() {
+           localStorage.setItem('plantReminders', JSON.stringify(reminders));
+       }
+
+       function addPlant() {
+           const name = plantNameInput.value.trim();
+           if (name) {
+               const newPlant = {
+                   name: name,
+                   lastWatered: null // null означает, что еще не поливали
+               };
+               plants.push(newPlant);
+               plantNameInput.value = '';
+               savePlants();
+               renderPlants();
+           } else {
+               alert("Пожалуйста, введите название цветка.");
+           }
+       }
+
+       function updateWatering(plantIndex) {
+           if (plants[plantIndex].lastWatered === null) {
+               plants[plantIndex].lastWatered = new Date().toISOString().split('T')[0]; // Формат YYYY-MM-DD
+           } else {
+               // Здесь можно добавить логику для обновления даты, если нужно
+           }
+           savePlants();
+           renderPlants();
+       }
+
+       function deletePlant(plantIndex) {
+           if (confirm(`Вы уверены, что хотите удалить цветок "${plants[plantIndex].name}"?`)) {
+               plants.splice(plantIndex, 1);
+               savePlants();
+               renderPlants();
+           }
+       }
+
+       // --- Функции рендеринга ---
+
+       function renderPlants() {
+           plantsSection.innerHTML = '<h2>Ваши Цветы</h2>';
+           if (plants.length === 0) {
+               plantsSection.innerHTML += '<p>Цветки еще не добавлены. Используйте форму выше.</p>';
+               return;
+           }
+
+           plants.forEach((plant, index) => {
+               const card = document.createElement('div');
+               card.className = 'plant-card';
+               card.innerHTML = `
+                   <h2>${plant.name}</h2>
+                   <p><strong>Последний полив:</strong> <span class="last-water-date">${plant.lastWatered ? new Date(plant.lastWatered).toLocaleDateString('ru-RU') : 'Не зафиксировано'}</span></p>
+                   <button onclick="updateWatering(${index})">Полить сейчас</button>
+                   <button onclick="deletePlant(${index})" style="background-color: #f44336; margin-left: 10px;">Удалить</button>
+               `;
+               plantsSection.appendChild(card);
+           });
+       }
+
+       function renderReminders() {
+           remindersList.innerHTML = '';
+           if (reminders.length === 0) {
+               document.getElementById('no-reminders').style.display = 'block';
+               return;
+           }
+           document.getElementById('no-reminders').style.display = 'none';
+
+           reminders.forEach((reminder, index) => {
+               const item = document.createElement('div');
+               item.className = 'reminder-item';
+               item.innerHTML = `
+                   <span>${reminder.message}</span>
+                   <button onclick="removeReminder(${index})" style="background: none; border: none; color: #f44336; cursor: pointer;">X</button>
+               `;
+               remindersList.appendChild(item);
+           });
+       }
+
+       function addReminder() {
+           const message = prompt("Введите сообщение для напоминания (например: 'Полить Розу через 3 дня'):");
+           if (message) {
+               reminders.push({ message: message, date: new Date().toISOString().split('T')[0] });
+               saveReminders();
+               renderReminders();
+           }
+       }
+
+       function removeReminder(index) {
+           reminders.splice(index, 1);
+           saveReminders();
+           renderReminders();
+       }
+
+       // --- Логика напоминаний (Проверка раз в минуту) ---
+       function checkReminders() {
+           const now = new Date().toISOString().split('T')[0]; // Сегодняшняя дата
+
+           reminders.forEach((reminder, index) => {
+               // Простая проверка: если дата напоминания совпадает с сегодняшней, показываем уведомление
+               if (reminder.date === now) {
+                   alert(`⏰ Напоминание: ${reminder.message}! Пора поливать.`);
+                   // В реальном приложении здесь можно добавить звуковое оповещение или push notification
+               }
+           });
+       }
+
+       // --- Инициализация ---
+       function initialize() {
+           renderPlants();
+           renderReminders();
+           // Запускаем проверку напоминаний каждые 60 секунд (для примера)
+           setInterval(checkReminders, 60000);
+       }
+
+       // Запуск при загрузке страницы
+       initialize();
+   </script>
+
+</body>
+</html>
+```
