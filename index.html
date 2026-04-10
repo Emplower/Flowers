@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plants Pro+</title>
+
+<style>
+body {
+    font-family: system-ui;
+    background: #eef5f1;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 520px;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.card {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.warning { color: red; font-weight: bold; }
+.ok { color: green; }
+
+.topbar {
+    display: flex;
+    gap: 6px;
+}
+
+.filter {
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>🌿 Plants Pro+</h1>
+
+<input id="name" placeholder="Название растения">
+<input id="interval" type="number" placeholder="Интервал (дней)">
+<div class="topbar">
+    <button onclick="addPlant()">Добавить</button>
+    <button onclick="requestPermission()">🔔</button>
+</div>
+
+<div class="filter">
+    <button onclick="toggleFilter()">Показать только нуждающиеся</button>
+</div>
+
+<div id="list"></div>
+</div>
+
+<script>
+const KEY = "plants_prod_v1";
+
+let state = {
+    plants: [],
+    filter: false
+};
+
+// загрузка
+function load() {
+    const data = JSON.parse(localStorage.getItem(KEY));
+    if (data) state = data;
+}
+
+// сохранение
+function save() {
+    localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+// добавить растение
+function addPlant() {
+    const name = document.getElementById("name").value.trim();
+    const interval = parseInt(document.getElementById("interval").value);
+
+    if (!name || !interval) return alert("Заполни все");
+
+    state.plants.push({
+        id: Date.now(),
+        name,
+        interval,
+        lastWatered: null,
+        nextWatering: null,
+        notifiedAt: null
+    });
+
+    save();
+    render();
+}
+
+// полив
+function water(id) {
+    const now = new Date();
+
+    const plant = state.plants.find(p => p.id === id);
+    plant.lastWatered = now.toISOString();
+    plant.nextWatering = new Date(now.getTime() + plant.interval * 86400000).toISOString();
+    plant.notifiedAt = null;
+
+    save();
+    render();
+}
+
+// удалить
+function removePlant(id) {
+    state.plants = state.plants.filter(p => p.id !== id);
+    save();
+    render();
+}
+
+// дни
+function daysLeft(date) {
+    return Math.ceil((new Date(date) - new Date()) / 86400000);
+}
+
+// рендер
+function render() {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    state.plants.forEach(p => {
+        let needWater = false;
+        let status = "";
+
+        if (!p.lastWatered) {
+            status = `<div class="warning">Не поливали</div>`;
+            needWater = true;
+        } else {
+            const left = daysLeft(p.nextWatering);
+
+            if (left <= 0) {
+                status = `<div class="warning">Пора полить</div>`;
+                needWater = true;
+            } else {
+                status = `<div class="ok">Осталось ${left} дней</div>`;
+            }
+        }
+
+        if (state.filter && !needWater) return;
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+            <b>${p.name}</b>
+            <div>Следующий полив: ${p.nextWatering ? new Date(p.nextWatering).toLocaleDateString() : "-"}</div>
+            ${status}
+            <button onclick="water(${p.id})">Полить</button>
+            <button onclick="removePlant(${p.id})">Удалить</button>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+// уведомления
+async function requestPermission() {
+    await Notification.requestPermission();
+}
+
+function notify(text) {
+    if (Notification.permission === "granted") {
+        new Notification("🌿 Plants", { body: text });
+    }
+}
+
+// проверка
+function check() {
+    const now = new Date().toDateString();
+
+    state.plants.forEach(p => {
+        if (!p.nextWatering) return;
+
+        const left = daysLeft(p.nextWatering);
+
+        if (left <= 0 && p.notifiedAt !== now) {
+            notify("Пора полить: " + p.name);
+            p.notifiedAt = now;
+            save();
+        }
+    });
+}
+
+// фильтр
+function toggleFilter() {
+    state.filter = !state.filter;
+    save();
+    render();
+}
+
+// интервалы
+setInterval(check, 30000);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) check();
+});
+
+// PWA
+if ("serviceWorker" in navigator) {
+    const sw = `
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => self.clients.claim());
+    `;
+    const blob = new Blob([sw], {type: "text/javascript"});
+    navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+
+// init
+load();
+render();
+</script>
+
+</body>
+</html>
