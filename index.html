@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Plants Pro+ v5</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #f0f4f0;
+  --surface: #ffffff;
+  --surface2: #f7faf7;
+  --border: #e0e8e0;
+  --green: #3d7a4f;
+  --green-light: #e8f3eb;
+  --green-mid: #5a9e6f;
+  --red: #c0392b;
+  --red-light: #fdf0ee;
+  --yellow: #b8860b;
+  --yellow-light: #fdf8e8;
+  --blue: #2563a8;
+  --blue-light: #edf4fc;
+  --text: #1a2e1e;
+  --text2: #4a6150;
+  --text3: #8a9e8f;
+  --shadow: 0 2px 12px rgba(30,60,35,0.08);
+  --shadow-lg: 0 8px 32px rgba(30,60,35,0.13);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--green);
+  color: white;
+  padding: 20px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(30,70,40,0.18);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 680px;
+  margin: 0 auto 16px;
+}
+.header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.header h1 span { font-style: italic; font-weight: 300; }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  max-width: 680px;
+  margin: 0 auto;
+  gap: 0;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.tab.active {
+  color: white;
+  border-bottom-color: rgba(255,255,255,0.9);
+}
+
+/* ── MAIN ── */
+.main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.plant-photo {
+  width: 52px; height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--green-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.plant-photo img { width: 100%; height: 100%; object-fit: cover; }
+.card-info { flex: 1; min-width: 0; }
+.card-name {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.card-status { flex-shrink: 0; text-align: right; }
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.status-ok { background: var(--green-light); color: var(--green); }
+.status-warn { background: var(--red-light); color: var(--red); }
+.status-soon { background: var(--yellow-light); color: var(--yellow); }
+.status-new { background: var(--blue-light); color: var(--blue); }
+
+.chevron {
+  color: var(--text3);
+  font-size: 12px;
+  transition: transform 0.2s;
+  margin-left: 4px;
+}
+.card.open .chevron { transform: rotate(180deg); }
+
+/* ── CARD BODY ── */
+.card-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 14px 16px;
+}
+.card.open .card-body { display: block; }
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.info-row:last-of-type { border-bottom: none; }
+.info-label { color: var(--text2); }
+.info-val { font-weight: 500; }
+
+/* ── MOISTURE BAR ── */
+.moisture-row { padding: 8px 0; }
+.moisture-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.moisture-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--red) 0%, var(--yellow) 50%, var(--green) 100%);
+  outline: none;
+  cursor: pointer;
+}
+.moisture-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--green);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ── HISTORY ── */
+.history-block { margin-top: 10px; }
+.history-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.history-chip {
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+/* ── NOTES ── */
+.notes-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  resize: none;
+  color: var(--text);
+  margin-top: 8px;
+  background: var(--surface2);
+  min-height: 60px;
+  outline: none;
+  transition: border 0.2s;
+}
+.notes-input:focus { border-color: var(--green-mid); }
+
+/* ── ACTION BUTTONS ── */
+.btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  min-height: 44px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-green { background: var(--green); color: white; }
+.btn-blue { background: var(--blue); color: white; }
+.btn-red { background: var(--red-light); color: var(--red); }
+.btn-gray { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+/* ── FERTILIZER ROW ── */
+.fert-row {
+  background: var(--yellow-light);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--yellow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── MANUAL DATE ── */
+.date-input {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface2);
+  outline: none;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ── ADD FORM ── */
+.add-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.add-panel h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--green);
+}
+.field { margin-bottom: 10px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface2);
+  outline: none;
+  transition: border 0.2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--green-mid);
+}
+.field-row { display: flex; gap: 10px; }
+.field-row .field { flex: 1; }
+
+/* ── PHOTO UPLOAD ── */
+.photo-upload {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 13px;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.photo-upload:hover { border-color: var(--green-mid); background: var(--green-light); }
+.photo-upload input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+}
+.photo-preview {
+  width: 100%; max-height: 120px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+/* ── ROOM TAGS ── */
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+}
+.tag.selected { background: var(--green); color: white; border-color: var(--green); }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+.filter-chip.active { background: var(--green); color: white; border-color: var(--green); }
+
+/* ── STATS PANEL ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+}
+.stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--green);
+  line-height: 1;
+}
+.stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── EXPORT/IMPORT ── */
+.export-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(20px);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--green);
+}
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text3);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty p { font-size: 15px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  z-index: 2000;
+  transition: transform 0.3s;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── SECTION TABS VIEW ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* Urgency indicator */
+.urgency-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+.dot-red { background: var(--red); }
+.dot-yellow { background: var(--yellow); }
+.dot-green { background: var(--green-mid); }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>🌿 Plants <span>Pro+</span></h1>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openAddModal()" title="Добавить растение">＋</button>
+      <button class="icon-btn" onclick="requestNotifPermission()" title="Уведомления">🔔</button>
+      <button class="icon-btn" onclick="exportData()" title="Экспорт">⬇</button>
+      <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Импорт">⬆</button>
+      <input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('plants')">Растения</div>
+    <div class="tab" onclick="switchTab('stats')">Статистика</div>
+    <div class="tab" onclick="switchTab('schedule')">Расписание</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══════════ PLANTS TAB ══════════ -->
+  <div id="view-plants" class="view active">
+
+    <div class="filter-bar" id="filterBar">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">Все</div>
+      <div class="filter-chip" data-filter="need" onclick="setFilter('need',this)">⚠ Нуждаются</div>
+      <div class="filter-chip" data-filter="soon" onclick="setFilter('soon',this)">🕐 Скоро</div>
+    </div>
+
+    <div class="filter-bar" id="roomBar"></div>
+
+    <div id="list"></div>
+  </div>
+
+  <!-- ══════════ STATS TAB ══════════ -->
+  <div id="view-stats" class="view">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div id="statsDetail"></div>
+  </div>
+
+  <!-- ══════════ SCHEDULE TAB ══════════ -->
+  <div id="view-schedule" class="view">
+    <div id="scheduleList"></div>
+  </div>
+
+</div>
+
+<!-- ══════════ ADD/EDIT MODAL ══════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <h2 id="modalTitle">Новое растение</h2>
+    <div class="field">
+      <label>Название</label>
+      <input id="f-name" placeholder="Фикус Бенджамина">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Тип</label>
+        <select id="f-type">
+          <option value="normal">Обычное</option>
+          <option value="succulent">Суккулент</option>
+          <option value="tropical">Тропическое</option>
+          <option value="flowering">Цветущее</option>
+          <option value="herb">Зелень/трава</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Интервал полива (дни)</label>
+        <input id="f-interval" type="number" min="1" placeholder="7">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Интервал удобрения (дни)</label>
+        <input id="f-fert-interval" type="number" min="1" placeholder="30">
+      </div>
+      <div class="field">
+        <label>Комната/место</label>
+        <input id="f-room" placeholder="Кухня">
+      </div>
+    </div>
+    <div class="field">
+      <label>Заметки</label>
+      <textarea id="f-notes" rows="2" placeholder="Удобрения, особенности ухода…"></textarea>
+    </div>
+    <div class="field">
+      <label>Фото</label>
+      <div class="photo-upload" id="photoUploadBox">
+        <input type="file" accept="image/*" id="f-photo" onchange="previewPhoto(event)">
+        <img class="photo-preview" id="photoPreview">
+        <span id="photoHint">📷 Нажмите чтобы добавить фото</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-gray" onclick="closeModal()">Отмена</button>
+      <button class="btn btn-green" onclick="savePlant()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+//  STATE & STORAGE
+// ══════════════════════════════════
+const KEY = 'plants_pro_v5';
+let state = { plants: [], filter: 'all', roomFilter: null };
+let editingId = null;
+let currentTab = 'plants';
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d) state = { ...state, ...d };
+  } catch(e) {}
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ══════════════════════════════════
+//  SEASON
+// ══════════════════════════════════
+function getSeasonFactor() {
+  const m = new Date().getMonth();
+  if (m <= 1 || m === 11) return 0.7;   // зима
+  if (m >= 5 && m <= 7) return 1.3;     // лето
+  return 1;
+}
+
+// ══════════════════════════════════
+//  PLANT CRUD
+// ══════════════════════════════════
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Новое растение';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-type').value = 'normal';
+  document.getElementById('f-interval').value = '';
+  document.getElementById('f-fert-interval').value = '';
+  document.getElementById('f-room').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoHint').style.display = '';
+  document.getElementById('f-photo').value = '';
+  currentPhotoB64 = null;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = state.plants.find(x => x.id === id);
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Редактировать';
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-type').value = p.type;
+  document.getElementById('f-interval').value = p.interval || '';
+  document.getElementById('f-fert-interval').value = p.fertInterval || '';
+  document.getElementById('f-room').value = p.room || '';
+  document.getElementById('f-notes').value = p.notes || '';
+  currentPhotoB64 = p.photo || null;
+  if (p.photo) {
+    document.getElementById('photoPreview').src = p.photo;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoHint').style.display = 'none';
+  } else {
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('photoHint').style.display = '';
+  }
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+let currentPhotoB64 = null;
+
+function previewPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentPhotoB64 = ev.target.result;
+    document.getElementById('photoPreview').src = currentPhotoB64;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoHint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function savePlant() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('Введите название растения'); return; }
+  const interval = parseInt(document.getElementById('f-interval').value) || null;
+  const fertInterval = parseInt(document.getElementById('f-fert-interval').value) || null;
+  const type = document.getElementById('f-type').value;
+  const room = document.getElementById('f-room').value.trim();
+  const notes = document.getElementById('f-notes').value.trim();
+
+  if (editingId) {
+    const p = state.plants.find(x => x.id === editingId);
+    Object.assign(p, { name, type, interval, fertInterval, room, notes });
+    if (currentPhotoB64) p.photo = currentPhotoB64;
+    showToast('✅ Сохранено');
+  } else {
+    state.plants.push({
+      id: Date.now(),
+      name, type, interval, fertInterval, room, notes,
+      photo: currentPhotoB64,
+      lastWatered: null,
+      nextWatering: null,
+      manualNext: null,
+      lastFertilized: null,
+      nextFertilizing: null,
+      moisture: 3,
+      history: [],
+      fertHistory: [],
+      notifiedAt: null,
+      fertNotifiedAt: null,
+    });
+    showToast('🌱 Растение добавлено');
+  }
+  save();
+  closeModal();
+  render();
+}
+
+function removePlant(id) {
+  if (!confirm('Удалить растение?')) return;
+  state.plants = state.plants.filter(p => p.id !== id);
+  save();
+  render();
+  showToast('🗑 Удалено');
+}
+
+// ══════════════════════════════════
+//  WATERING / FERTILIZING
+// ══════════════════════════════════
+function water(id) {
+  const now = new Date();
+  const p = state.plants.find(x => x.id === id);
+  p.lastWatered = now.toISOString();
+  p.history = p.history || [];
+  p.history.push(now.toISOString());
+  if (p.history.length > 20) p.history = p.history.slice(-20);
+  p.notifiedAt = null;
+  p.manualNext = null;
+  if (p.interval) {
+    const adj = Math.round(p.interval / getSeasonFactor());
+    p.nextWatering = new Date(now.getTime() + adj * 86400000).toISOString();
+  }
+  save(); render();
+  showToast('💧 Полито!');
+}
+
+function fertilize(id) {
+  const now = new Date();
+  const p = state.plants.find(x => x.id === id);
+  p.lastFertilized = now.toISOString();
+  p.fertHistory = p.fertHistory || [];
+  p.fertHistory.push(now.toISOString());
+  if (p.fertInterval) {
+    p.nextFertilizing = new Date(now.getTime() + p.fertInterval * 86400000).toISOString();
+  }
+  save(); render();
+  showToast('🌿 Удобрено!');
+}
+
+function setManualDate(id, val) {
+  const p = state.plants.find(x => x.id === id);
+  if (val) {
+    const newDate = new Date(val);
+    p.manualNext = newDate.toISOString();
+    p.nextWatering = p.manualNext;
+  } else {
+    p.manualNext = null;
+    if (p.interval) {
+      const adj = Math.round(p.interval / getSeasonFactor());
+      p.nextWatering = new Date(new Date().getTime() + adj * 86400000).toISOString();
+    } else {
+      p.nextWatering = null;
+    }
+  }
+  save();
+  render();
+}
+
+function setMoisture(id, val) {
+  const p = state.plants.find(x => x.id === id);
+  p.moisture = parseInt(val);
+  save();
+  const el = document.getElementById(`moist-label-${id}`);
+  if (el) el.textContent = moistureLabel(parseInt(val));
+}
+
+function saveNotes(id, val) {
+  const p = state.plants.find(x => x.id === id);
+  p.notes = val;
+  save();
+}
+
+// ══════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════
+function daysLeft(d) {
+  return Math.ceil((new Date(d) - new Date()) / 86400000);
+}
+
+function fmtDate(d) {
+  return d ? new Date(d).toLocaleDateString('ru', { day: 'numeric', month: 'short' }) : '—';
+}
+
+function typeLabel(t) {
+  return { normal: 'Обычное', succulent: 'Суккулент', tropical: 'Тропическое', flowering: 'Цветущее', herb: 'Зелень' }[t] || t;
+}
+
+function moistureLabel(v) {
+  return ['', '🔴 Очень сухо', '🟠 Сухо', '🟡 Умеренно', '🟢 Нормально', '💧 Влажно'][v] || '';
+}
+
+function getStatus(p) {
+  const next = p.manualNext || p.nextWatering;
+  let waterStatus = 'new', waterText = 'Не поливали', daysToWater = null;
+  let needWater = false;
+  let needFert = false;
+
+  if (!p.lastWatered) {
+    waterStatus = 'warn'; waterText = 'Не поливали'; needWater = true;
+  } else if (next) {
+    daysToWater = daysLeft(next);
+    if (daysToWater <= 0) {
+      waterStatus = 'warn'; waterText = 'Пора полить'; needWater = true;
+    } else if (daysToWater <= 2) {
+      waterStatus = 'soon'; waterText = `через ${daysToWater} дн`; 
+    } else {
+      waterStatus = 'ok'; waterText = `через ${daysToWater} дн`;
+    }
+  } else {
+    waterStatus = 'ok'; waterText = 'Готово';
+  }
+  if (p.moisture <= 2) { needWater = true; }
+
+  if (p.nextFertilizing) {
+    const fd = daysLeft(p.nextFertilizing);
+    if (fd <= 0) needFert = true;
+  }
+
+  return { waterStatus, waterText, needWater, needFert, daysToWater };
+}
+
+// ══════════════════════════════════
+//  RENDER
+// ══════════════════════════════════
+function render() {
+  renderRoomFilter();
+  renderList();
+  if (currentTab === 'stats') renderStats();
+  if (currentTab === 'schedule') renderSchedule();
+}
+
+function renderRoomFilter() {
+  const rooms = [...new Set(state.plants.map(p => p.room).filter(Boolean))];
+  const bar = document.getElementById('roomBar');
+  if (!rooms.length) { bar.innerHTML = ''; return; }
+  bar.innerHTML = rooms.map(r =>
+    `<div class="filter-chip${state.roomFilter===r?' active':''}" onclick="setRoomFilter('${r}')">${r}</div>`
+  ).join('') +
+  (state.roomFilter ? `<div class="filter-chip" onclick="setRoomFilter(null)">✕ Все комнаты</div>` : '');
+}
+
+function renderList() {
+  const list = document.getElementById('list');
+  let plants = state.plants;
+
+  if (state.roomFilter) plants = plants.filter(p => p.room === state.roomFilter);
+  if (state.filter === 'need') plants = plants.filter(p => getStatus(p).needWater || getStatus(p).needFert);
+  if (state.filter === 'soon') plants = plants.filter(p => {
+    const s = getStatus(p);
+    return s.daysToWater !== null && s.daysToWater > 0 && s.daysToWater <= 2;
+  });
+
+  plants = [...plants].sort((a, b) => {
+    const score = p => { const s = getStatus(p); if (s.needWater) return 0; if (s.waterStatus==='soon') return 1; return 2; };
+    return score(a) - score(b);
+  });
+
+  if (!plants.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🌵</div><p>${
+      state.plants.length ? 'Ничего не найдено' : 'Добавьте первое растение'
+    }</p></div>`;
+    return;
+  }
+
+  list.innerHTML = plants.map(p => {
+    const s = getStatus(p);
+    const next = p.manualNext || p.nextWatering;
+
+    const photoHTML = p.photo
+      ? `<div class="plant-photo"><img src="${p.photo}" alt="${p.name}"></div>`
+      : `<div class="plant-photo">${{normal:'🪴',succulent:'🌵',tropical:'🌴',flowering:'🌺',herb:'🌿'}[p.type]||'🪴'}</div>`;
+
+    const badgeClass = { ok:'status-ok', warn:'status-warn', soon:'status-soon', new:'status-new' }[s.waterStatus];
+
+    const historyHTML = (p.history||[]).length
+      ? `<div class="history-block">
+          <div class="history-title">История поливов</div>
+          <div class="history-list">${[...(p.history||[])].reverse().slice(0,8).map(d =>
+            `<span class="history-chip">${fmtDate(d)}</span>`).join('')}</div>
+        </div>`
+      : '';
+
+    const fertHTML = p.fertInterval
+      ? `<div class="fert-row">
+          <span>🌿 Удобрение: ${p.nextFertilizing ? (daysLeft(p.nextFertilizing)<=0?'Пора!':'через '+daysLeft(p.nextFertilizing)+' дн') : 'не задано'}</span>
+          <button class="btn btn-gray" style="flex:none;padding:4px 10px;font-size:12px" onclick="fertilize(${p.id})">Удобрить</button>
+        </div>`
+      : '';
+
+    const avgDays = avgWaterInterval(p);
+
+    return `
+    <div class="card" id="card-${p.id}">
+      <div class="card-header" onclick="toggleCard(${p.id})">
+        ${photoHTML}
+        <div class="card-info">
+          <div class="card-name">${escapeHtml(p.name)}</div>
+          <div class="card-meta">${typeLabel(p.type)}${p.room ? ' · ' + escapeHtml(p.room) : ''}</div>
+        </div>
+        <div class="card-status">
+          <span class="status-badge ${badgeClass}">${s.waterText}</span>
+          ${s.moisture<=2?'<br><span class="status-badge status-warn" style="margin-top:4px">Сухо</span>':''}
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">Последний полив</span>
+          <span class="info-val">${fmtDate(p.lastWatered)}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Следующий полив</span>
+          <span class="info-val">${next ? fmtDate(next) : '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Интервал (с сезоном)</span>
+          <span class="info-val">${p.interval ? Math.round(p.interval/getSeasonFactor())+' дн' : '—'}</span>
+        </div>
+        ${avgDays ? `<div class="info-row">
+          <span class="info-label">Ср. факт. интервал</span>
+          <span class="info-val">${avgDays} дн</span>
+        </div>` : ''}
+        <div class="moisture-row">
+          <div class="moisture-label">
+            <span>Влажность почвы</span>
+            <span id="moist-label-${p.id}">${moistureLabel(p.moisture)}</span>
+          </div>
+          <input class="moisture-slider" type="range" min="1" max="5" value="${p.moisture}"
+            oninput="setMoisture(${p.id}, this.value)">
+        </div>
+        <div style="margin-top:4px">
+          <label style="font-size:12px;color:var(--text2)">Дата следующего полива вручную</label>
+          <input class="date-input" type="date" onchange="setManualDate(${p.id}, this.value)">
+        </div>
+        ${fertHTML}
+        ${historyHTML}
+        <div style="margin-top:10px">
+          <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Заметки</label>
+          <textarea class="notes-input" rows="2" onblur="saveNotes(${p.id}, this.value)">${escapeHtml(p.notes||'')}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="water(${p.id})">💧 Полить</button>
+          <button class="btn btn-blue" onclick="openEditModal(${p.id})">✏️ Изменить</button>
+          <button class="btn btn-red" onclick="removePlant(${p.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('open');
+}
+
+function avgWaterInterval(p) {
+  const h = p.history || [];
+  if (h.length < 2) return null;
+  const last = h.slice(-6);
+  let total = 0;
+  for (let i = 1; i < last.length; i++) {
+    total += (new Date(last[i]) - new Date(last[i-1])) / 86400000;
+  }
+  if (last.length - 1 === 0) return null;
+  return Math.round(total / (last.length - 1));
+}
+
+// ══════════════════════════════════
+//  STATS
+// ══════════════════════════════════
+function renderStats() {
+  const plants = state.plants;
+  const needWater = plants.filter(p => getStatus(p).needWater).length;
+  const total = plants.length;
+  const watered7 = plants.filter(p => {
+    if (!p.lastWatered) return false;
+    return daysLeft(p.lastWatered) >= -7;
+  }).length;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Всего растений</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${needWater}</div><div class="stat-label">Нужен полив</div></div>
+    <div class="stat-card"><div class="stat-num">${watered7}</div><div class="stat-label">Полито за 7 дней</div></div>
+    <div class="stat-card"><div class="stat-num">${[...new Set(plants.map(p=>p.room).filter(Boolean))].length}</div><div class="stat-label">Комнат</div></div>
+  `;
+
+  if (!plants.length) { document.getElementById('statsDetail').innerHTML = ''; return; }
+
+  document.getElementById('statsDetail').innerHTML = `
+    <div class="card">
+      <div style="padding:14px 16px">
+        <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:12px;color:var(--green)">Детали по растениям</div>
+        ${plants.map(p => {
+          const avg = avgWaterInterval(p);
+          const s = getStatus(p);
+          return `<div class="info-row">
+            <span class="info-label">${escapeHtml(p.name)}</span>
+            <span class="info-val" style="font-size:13px;text-align:right">
+              ${avg ? '⌀ '+avg+' дн &nbsp;' : ''}
+              <span class="status-badge ${s.waterStatus==='warn'?'status-warn':s.waterStatus==='soon'?'status-soon':'status-ok'}" style="font-size:11px">${s.waterText}</span>
+            </span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════
+//  SCHEDULE
+// ══════════════════════════════════
+function renderSchedule() {
+  const plants = state.plants;
+  const events = [];
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  plants.forEach(p => {
+    const next = p.manualNext || p.nextWatering;
+    if (next) {
+      const d = new Date(next); d.setHours(0,0,0,0);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff >= -1 && diff <= 30) events.push({ date: d, diff, plant: p.name, type: 'water' });
+    }
+    if (p.nextFertilizing) {
+      const d = new Date(p.nextFertilizing); d.setHours(0,0,0,0);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff >= -1 && diff <= 30) events.push({ date: d, diff, plant: p.name, type: 'fert' });
+    }
+  });
+
+  events.sort((a, b) => a.date - b.date);
+
+  if (!events.length) {
+    document.getElementById('scheduleList').innerHTML = `<div class="empty"><div class="empty-icon">📅</div><p>Нет запланированных событий</p></div>`;
+    return;
+  }
+
+  const groups = {};
+  events.forEach(e => {
+    const key = e.date.toLocaleDateString('ru', { day: 'numeric', month: 'long', weekday: 'short' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+
+  document.getElementById('scheduleList').innerHTML = Object.entries(groups).map(([date, evs]) => `
+    <div class="card" style="margin-bottom:10px">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;color:var(--green)">${date}</div>
+      ${evs.map(e => `
+        <div class="info-row" style="padding:8px 16px">
+          <span>${e.type==='water'?'💧':'🌿'} ${escapeHtml(e.plant)}</span>
+          <span class="status-badge ${e.diff<=0?'status-warn':e.diff<=2?'status-soon':'status-ok'}" style="font-size:12px">
+            ${e.diff<=0?'Сегодня/просрочено':e.diff===1?'Завтра':'через '+e.diff+' дн'}
+          </span>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+//  TABS / FILTERS
+// ══════════════════════════════════
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['plants','stats','schedule'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  if (tab === 'stats') renderStats();
+  if (tab === 'schedule') renderSchedule();
+}
+
+function setFilter(f, el) {
+  state.filter = f;
+  document.querySelectorAll('#filterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function setRoomFilter(r) {
+  state.roomFilter = r;
+  renderRoomFilter();
+  renderList();
+}
+
+// ══════════════════════════════════
+//  NOTIFICATIONS
+// ══════════════════════════════════
+async function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('Уведомления не поддерживаются'); return; }
+  const perm = await Notification.requestPermission();
+  showToast(perm === 'granted' ? '🔔 Уведомления включены' : 'Уведомления отклонены');
+}
+
+function notify(text) {
+  if (Notification.permission === 'granted') {
+    new Notification('🌿 Plants Pro+', { body: text, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>' });
+  }
+}
+
+function checkNotifications() {
+  const now = new Date().toDateString();
+  state.plants.forEach(p => {
+    const next = p.manualNext || p.nextWatering;
+    if (next) {
+      const left = daysLeft(next);
+      if ((left <= 0 || p.moisture <= 2) && p.notifiedAt !== now) {
+        notify('Нужен полив: ' + p.name);
+        p.notifiedAt = now;
+        save();
+      }
+    }
+    if (p.nextFertilizing && daysLeft(p.nextFertilizing) <= 0 && p.fertNotifiedAt !== now) {
+      notify('Пора удобрить: ' + p.name);
+      p.fertNotifiedAt = now;
+      save();
+    }
+  });
+}
+
+// ══════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════
+function exportData() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `plants_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('📦 Экспорт сохранён');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.plants) {
+        state = { ...state, ...d };
+        save(); render();
+        showToast('✅ Данные восстановлены');
+      } else {
+        showToast('❌ Неверный формат файла');
+      }
+    } catch(err) {
+      showToast('❌ Ошибка чтения файла');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ══════════════════════════════════
+//  TOAST
+// ══════════════════════════════════
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════
+//  PWA SERVICE WORKER
+// ══════════════════════════════════
+if ('serviceWorker' in navigator) {
+  const sw = `
+    const CACHE = 'plants-v5';
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    });
+  `;
+  const blob = new Blob([sw], { type: 'text/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+}
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+load();
+render();
+setInterval(checkNotifications, 3600000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkNotifications(); });
+</script>
+</body>
+</html>
